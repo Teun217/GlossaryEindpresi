@@ -92,6 +92,34 @@
   line-height: 16px;
   text-transform: lowercase;
   opacity: 0.8;
+  transition: opacity 0.15s;
+}
+
+/* Hovering a period's label lights up the whole period, like the thumbnails:
+   its lines thicken (drawn on top, so the grid itself doesn't shift) */
+.week {
+  position: relative;
+}
+
+.week::after {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  border: 3px solid #fff;
+  opacity: 0;
+  transition: opacity 0.15s;
+  pointer-events: none;
+}
+
+.week:has(.week-label:hover)::after,
+.week:has(.week-label:focus-visible)::after {
+  opacity: 1;
+}
+
+.week-label:hover,
+.week-label:focus-visible {
+  opacity: 1;
+  outline: none;
 }
 
 .week-terms {
@@ -401,6 +429,7 @@ button.grid-cell:focus-visible .thumb {
 .info .row-squares {
   display: flex;
   flex-wrap: wrap;
+  justify-content: center;
   padding: 18px;
 }
 

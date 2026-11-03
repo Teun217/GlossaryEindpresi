@@ -1,12 +1,16 @@
 // The most important things per period, shown on the slide before that
 // period's animations. One line per point, e.g.
 //   'Week 2': ['Started on the interaction terms', 'First user test'],
-// The names must match the labels in the schedule in script.js.
+// The names must match the labels in the schedule in script.js (or their
+// `title`, when a period has one, like 'Week 4 en 5').
 const weekHighlights = {
-  'Before the internship': [],
+  'Voor de stage': [
+    'Voor de eindopdracht van de minor Web Design & Development zijn we aan de slag gegaan met de opdracht van Marjolijn. Hoewel we het tijdens deze opdracht leuk hebben gehad en natuurlijk veel hebben geleerd, onder andere over samenwerken in een team, verschoof de aandacht van het maken van webanimaties naar het opzetten van de website eromheen. De animaties waren dus niet meer het hoofdonderwerp van de opdracht. Daarom waren we erg blij dat we de stage aangeboden kregen, zodat we alsnog met de animaties aan de slag konden.',
+  ],
+  'Week 1': [],
   'Week 2': [],
   'Week 3': [],
-  'Week 5': [],
+  'Week 4 en 5': [],
   'Week 6': [],
   'Week 7': [],
   'Week 8': [],
@@ -42,7 +46,11 @@ const content = {
   },
   'cybernetics': {
     reasoning: [],
-    inspiration: [],
+    inspiration: [
+      { src: 'inspiration/cybernetics-1.png', caption: 'RoboCop' },
+      { src: 'inspiration/cybernetics-2.png', caption: 'Sketches' },
+      { src: 'inspiration/cybernetics-3.png', caption: '' },
+    ],
   },
   'adaptation': {
     reasoning: [],
@@ -58,7 +66,11 @@ const content = {
   },
   'beyond-control': {
     reasoning: [],
-    inspiration: [],
+    inspiration: [
+      { src: 'inspiration/beyond-control-1.png', caption: 'Starling murmuration' },
+      { src: 'inspiration/beyond-control-2.png', caption: 'Sketches' },
+      { src: 'inspiration/beyond-control-3.png', caption: 'Interacting galaxies' },
+    ],
   },
   'control': {
     reasoning: [],
@@ -70,7 +82,11 @@ const content = {
   },
   'friction': {
     reasoning: [],
-    inspiration: [],
+    inspiration: [
+      { src: 'inspiration/friction-1.png', caption: 'Sanding wood' },
+      { src: 'inspiration/friction-2.png', caption: 'Worn stone steps' },
+      { src: 'inspiration/friction-3.png', caption: 'Air hockey table' },
+    ],
   },
   'interface': {
     reasoning: [],
@@ -106,11 +122,19 @@ const content = {
   },
   'neutrum': {
     reasoning: [],
-    inspiration: [],
+    inspiration: [
+      { src: 'inspiration/neutrum-1.png', caption: 'Ripples in water' },
+      { src: 'inspiration/neutrum-2.png', caption: '' },
+      { src: 'inspiration/neutrum-3.png', caption: '' },
+    ],
   },
   'noise': {
     reasoning: [],
-    inspiration: [],
+    inspiration: [
+      { src: 'inspiration/noise-1.png', caption: 'TV static' },
+      { src: 'inspiration/noise-2.png', caption: '' },
+      { src: 'inspiration/noise-3.png', caption: 'Motus, Branta Games' },
+    ],
   },
   'object': {
     reasoning: [],
@@ -134,7 +158,10 @@ const content = {
   },
   'remote-control': {
     reasoning: [],
-    inspiration: [],
+    inspiration: [
+      { src: 'inspiration/remote-control-1.png', caption: 'Sketches' },
+      { src: 'inspiration/remote-control-2.png', caption: '' },
+    ],
   },
   'silence': {
     reasoning: [],

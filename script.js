@@ -33,12 +33,14 @@ const animations = {
 
 // The overview, a block per period. A slug from `animations` shows that
 // animation; any other text is a term whose animation isn't added yet;
-// null is an empty slot.
+// null is an empty slot. `title` replaces the label on the period's own slide;
+// `hidden` periods only get a slide, not a block on the overview.
 const schedule = [
-  { label: 'Before the internship', terms: ['adaptation', 'intra-action', 'invisible', 'balancing-feedback', 'lines-of-flight', 'reinforcing-feedback', 'system'] },
+  { label: 'Voor de stage', terms: ['adaptation', 'intra-action', 'invisible', 'balancing-feedback', 'lines-of-flight', 'reinforcing-feedback', 'system'] },
+  { label: 'Week 1', terms: [], hidden: true },
   { label: 'Week 2', terms: ['interaction', 'intra-action', 'liminal-space', 'latent-space'] },
   { label: 'Week 3', terms: ['intraface', 'interface', 'ecology', 'cybernetics'] },
-  { label: 'Week 5', terms: ['reinforcing-feedback'] },
+  { label: 'Week 5', title: 'Week 4 en 5', terms: ['reinforcing-feedback'] },
   { label: 'Week 6', terms: ['control', 'remote-control', 'out-of-control', 'beyond-control'] },
   { label: 'Week 7', terms: ['neutrum', 'silence', 'noise'] },
   { label: 'Week 8', terms: ['recursivity', 'proximity', 'friction', 'affect'] },
@@ -112,8 +114,8 @@ function infoSlide(slug) {
 
 // The slide before each period's animations: the most important things of that
 // period (weekHighlights in content.js) and its animations
-function weekSlide({ label, terms }) {
-  const highlights = weekHighlights[label] || [];
+function weekSlide({ label, title = label, terms }) {
+  const highlights = weekHighlights[title] || [];
   const items = highlights.length
     ? highlights.map((text) => `<li>${text}</li>`).join('')
     : '<li class="placeholder">The most important things of this period go here (content.js).</li>';
@@ -122,15 +124,16 @@ function weekSlide({ label, terms }) {
   section.id = periodId(label);
   section.innerHTML = `
     <div class="info">
-      ${slideHeader(label)}
+      ${slideHeader(title)}
       <div class="page">
         <div class="block block-header"><h3>Highlights</h3></div>
         <div class="row"><div class="block block-text"><ul class="highlights">${items}</ul></div></div>
+        ${terms.length ? `
         <div class="block block-header"><h3>Animations</h3></div>
-        <div class="row"><div class="block row-squares"></div></div>
+        <div class="row"><div class="block row-squares"></div></div>` : ''}
       </div>
     </div>`;
-  section.querySelector('.row-squares').append(...terms.map((term) => gridCell(term)));
+  section.querySelector('.row-squares')?.append(...terms.map((term) => gridCell(term)));
   section.querySelector('.back').addEventListener('click', () => transition(() => Reveal.slide(0)));
   return section;
 }
@@ -245,7 +248,7 @@ function setSpan(block, span) {
   block.style.setProperty('--span', span);
 }
 
-schedule.forEach(({ label, terms }) => {
+schedule.filter((period) => !period.hidden).forEach(({ label, terms }) => {
   if (used + terms.length > COLUMNS) {
     setSpan(lastBlock, Number(lastBlock.style.getPropertyValue('--span')) + COLUMNS - used);
 
