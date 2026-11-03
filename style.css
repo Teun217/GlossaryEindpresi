@@ -1,0 +1,429 @@
+/* Fonts of the glossary site */
+@font-face {
+  font-family: "Inter";
+  src: url("animations/site/fonts/Inter/Inter-VariableFont_opsz,wght.ttf");
+  font-weight: 100 900;
+}
+
+@font-face {
+  font-family: "Courier Prime";
+  src: url("animations/site/fonts/Courier_Prime/CourierPrime-Regular.ttf");
+}
+
+/* Overrides for the reveal.js theme */
+:root {
+  --r-heading-text-transform: none;
+  --r-main-font: "Inter", Helvetica, sans-serif;
+  --r-heading-font: "Inter", Helvetica, sans-serif;
+  --r-heading-font-weight: 700;
+
+  --font-body: "Courier Prime", Courier, monospace;
+
+  /* Black and white only */
+  --r-background-color: #000;
+  --r-main-color: #fff;
+  --r-heading-color: #fff;
+  --r-link-color: #fff;
+  --r-link-color-hover: #fff;
+  --r-selection-background-color: #fff;
+  --r-selection-color: #000;
+
+  /* Size the animations render at on the detail slide */
+  --stage-width: 1920px;
+  --stage-height: 960px;
+}
+
+/* The theme caps iframes and videos at 95%, which leaves gaps in the thumbnails
+   and would break the fixed stage size */
+.reveal .slides iframe,
+.reveal .slides video {
+  max-width: none;
+  max-height: none;
+}
+
+/* ---------- Overview: periods side by side ---------- */
+
+.overview {
+  /* Narrower than the slide so four rows of squares fit under the title */
+  width: 1824px;
+  margin: 0 auto;
+  height: 1080px;
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+}
+
+.overview h1 {
+  height: 70px;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  font-size: 48px;
+}
+
+/* One grid for all squares (COLUMNS in script.js); each period spans as many
+   columns as it has terms, and its borders draw the lines between periods */
+.weeks {
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  align-content: start;
+  border-top: 1px solid #fff;
+  border-left: 1px solid #fff;
+}
+
+.week {
+  grid-column: span var(--span);
+  border-right: 1px solid #fff;
+  border-bottom: 1px solid #fff;
+}
+
+.week-label {
+  display: block;
+  width: 100%;
+  border: 0;
+  background: none;
+  color: inherit;
+  font-family: inherit;
+  text-align: left;
+  cursor: pointer;
+  height: 22px;
+  padding: 6px 8px 0;
+  font-size: 14px;
+  line-height: 16px;
+  text-transform: lowercase;
+  opacity: 0.8;
+}
+
+.week-terms {
+  display: grid;
+  grid-template-columns: repeat(var(--span), 1fr);
+}
+
+.grid-cell {
+  position: relative;
+  width: calc(100% - 12px);
+  aspect-ratio: 1 / 1;
+  margin: 6px;
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+  text-align: left;
+}
+
+.thumb {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: #000;
+  outline: 1px solid #fff;
+  transition: outline-width 0.15s, transform 0.15s;
+}
+
+button.grid-cell:hover .thumb,
+button.grid-cell:focus-visible .thumb {
+  outline-width: 3px;
+  transform: scale(1.04);
+}
+
+/* The name sits on top of the thumbnail, outside it, so it doesn't grow
+   along when the thumbnail morphs into the animation */
+.grid-cell .label {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  padding: 2px 8px;
+  background: #000;
+  font-size: 14px;
+  white-space: nowrap;
+  font-weight: 600;
+  pointer-events: none;
+}
+
+/* Terms whose animation isn't added yet, and empty slots */
+.grid-cell.is-upcoming,
+.grid-cell.is-empty {
+  cursor: default;
+}
+
+.is-upcoming .thumb,
+.is-empty .thumb {
+  display: grid;
+  place-items: center;
+  outline: 1px dashed rgba(255, 255, 255, 0.4);
+  font-size: 13px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+/* Recorded loops (see tools/record-thumbnails.mjs): running all animations
+   live at once is too heavy, the detail slides show the live version */
+.thumb video {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* ---------- Detail slides ---------- */
+
+.detail,
+.info {
+  height: 1080px;
+  display: flex;
+  flex-direction: column;
+}
+
+.detail header,
+.info header {
+  height: 120px;
+  display: flex;
+  align-items: center;
+  gap: 32px;
+}
+
+.detail h2,
+.info h2 {
+  margin: 0;
+}
+
+.back {
+  padding: 8px 20px;
+  border: 2px solid currentColor;
+  background: none;
+  font: inherit;
+  font-size: 24px;
+  color: inherit;
+  cursor: pointer;
+}
+
+.detail iframe {
+  width: var(--stage-width);
+  height: var(--stage-height);
+  border: 0;
+  outline: 1px solid #fff;
+  background: #000;
+}
+
+/* ---------- Explanation slides (grid lines of the glossary site) ---------- */
+
+.info {
+  text-align: left;
+}
+
+/* Outer vertical lines run down to the bottom of the slide */
+.info .page {
+  --row-inset: 80px;
+
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  width: 1500px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  padding-bottom: 40px;
+}
+
+.info .page::before,
+.info .page::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  border-left: 1px solid #fff;
+}
+
+.info .page::before { left: 0; }
+.info .page::after { right: 0; }
+
+.info .block {
+  border: 1px solid #fff;
+}
+
+.info .row,
+.info .block-header {
+  position: relative;
+  margin: -1px var(--row-inset) 0;
+}
+
+/* Horizontal lines continue to the edges of the slide; their ends draw the
+   inner vertical lines */
+.info .row::before,
+.info .row::after,
+.info .block-header::before,
+.info .block-header::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  border-top: 1px solid #fff;
+  border-bottom: 1px solid #fff;
+  pointer-events: none;
+}
+
+.info .block-header::before,
+.info .block-header::after {
+  top: -1px;
+  bottom: -1px;
+}
+
+.info .row::before,
+.info .block-header::before {
+  right: 100%;
+  left: calc(-1 * (960px - 50%));
+  border-left: 1px solid #fff;
+}
+
+.info .row::after,
+.info .block-header::after {
+  left: 100%;
+  right: calc(-1 * (960px - 50%));
+  border-right: 1px solid #fff;
+}
+
+.info .block-header {
+  padding: 16px 28px;
+}
+
+.info h3 {
+  margin: 0;
+  font-size: 40px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  line-height: 1.2;
+  text-transform: uppercase;
+}
+
+.info .block-text {
+  padding: 32px 36px;
+}
+
+.info .block-text p {
+  margin: 0 0 20px;
+  font-family: var(--font-body);
+  font-size: 26px;
+  line-height: 1.35;
+  letter-spacing: -0.5px;
+  text-align: justify;
+  hyphens: auto;
+}
+
+.info .block-text p:last-child {
+  margin-bottom: 0;
+}
+
+.info .placeholder {
+  opacity: 0.5;
+}
+
+.info .row-images {
+  flex: 1;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: repeat(var(--columns), 1fr);
+}
+
+.info .block-image {
+  min-height: 0;
+  margin: 0 0 0 -1px; /* collapse the border with the neighbouring image */
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.info .block-image:first-child {
+  margin-left: 0;
+}
+
+.info .block-image img {
+  flex: 1;
+  min-height: 0;
+  width: 100%;
+  max-width: none;
+  max-height: none;
+  margin: 0;
+  object-fit: contain;
+}
+
+.info figcaption {
+  font-size: 18px;
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  opacity: 0.7;
+}
+
+.info .image-placeholder {
+  flex: 1;
+  display: grid;
+  place-items: center;
+  border: 1px dashed rgba(255, 255, 255, 0.4);
+  font-size: 20px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  opacity: 0.5;
+}
+
+/* ---------- Period summary slides ---------- */
+
+.info .highlights {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.info .highlights li {
+  position: relative;
+  margin: 0 0 14px;
+  padding-left: 44px;
+  font-family: var(--font-body);
+  font-size: 28px;
+  line-height: 1.35;
+  letter-spacing: -0.5px;
+}
+
+.info .highlights li::before {
+  content: "—";
+  position: absolute;
+  left: 0;
+}
+
+.info .highlights li:last-child {
+  margin-bottom: 0;
+}
+
+.info .row-squares {
+  display: flex;
+  flex-wrap: wrap;
+  padding: 18px;
+}
+
+.info .row-squares .grid-cell {
+  width: 220px;
+}
+
+/* ---------- View transition: thumbnail <-> detail animation ---------- */
+
+/* Let the square thumbnail and the wide animation fill the morphing box
+   instead of keeping their own proportions */
+::view-transition-old(animation),
+::view-transition-new(animation) {
+  height: 100%;
+  object-fit: cover;
+}
+
+::view-transition-group(animation) {
+  animation-duration: 0.6s;
+  animation-timing-function: cubic-bezier(0.65, 0, 0.35, 1);
+}
+
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 0.3s;
+}

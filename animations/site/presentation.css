@@ -1,0 +1,23 @@
+/* Overrides for showing the animations inside the presentation (loaded after
+   the animation's own CSS). Each animation page fills the whole iframe. */
+
+:root {
+    --animation-height: 100vh;
+}
+
+html,
+body {
+    height: 100%;
+    overflow: hidden;
+}
+
+.animation-section .hidden-section {
+    height: 100%;
+}
+
+/* The site's play/stop button isn't used in the presentation */
+.animation-button,
+.animation-button.play-animation,
+.animation-button.stop-animation {
+    display: none;
+}

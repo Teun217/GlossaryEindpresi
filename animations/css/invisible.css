@@ -1,0 +1,65 @@
+/* =====================================
+MARK: Invisible Animation
+===================================== */
+
+.invisible-container {
+    width: 100dvw;
+    height: 90dvh;
+    position: relative;
+
+    div {
+        width: 101%;
+        height: 101%;
+        display: grid;
+        place-items: center;
+        overflow: hidden;
+    }
+
+    p {
+        font-family: "Courier Prime", monospace;
+        pointer-events: none;
+        font-size: clamp(0.75em, 4vw, 1.75em);
+        line-height: 0.75;
+
+        text-wrap: wrap;
+        word-break: break-all;
+        text-align: center;
+        /* breaks words at every letters */
+
+        width: 100%;
+        margin: 0;
+    }
+
+    span {
+        margin: 1em;
+    }
+
+    .invisible-title {
+        font-family: Inter;
+        font-weight: bold;
+        font-size: clamp(1rem, 20vw, 12em);
+        text-transform: uppercase;
+        text-wrap: nowrap;
+        color: var(--color-background);
+
+        position: absolute;
+        display: block;
+        place-items: center;
+        left: 50%;
+        top: 50%;
+        translate: -50% -50%;
+        /* displays title center */
+        
+        
+        pointer-events: none;
+    }
+
+    @media (max-width: 800px) {
+        .invisible-title {
+            font-size: 9em;
+            writing-mode: vertical-rl;
+            width: fit-content;
+            /* changes font size and direction */
+        }
+    }
+}

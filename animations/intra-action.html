@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width">
+    <title>Intra-action</title>
+    <link rel="stylesheet" href="site/general.css">
+    <link rel="stylesheet" href="site/detail-page.css">
+    <link rel="stylesheet" href="css/intra-action.css">
+    <link rel="stylesheet" href="site/presentation.css">
+</head>
+<body>
+<!-- Same wrapper as the detail page of the glossary site (src/components/Header.astro) -->
+<div class="animation-section">
+    <div class="hidden-section" aria-hidden="true">
+        <button class="animation-button"><span></span></button>
+<div class="animation-container">
+		<div class="set-sibling-index intra-section intra-section-1" id="intra-section-1">
+			<p class="blend" draggable="true">intra-action</p>
+			<p class="blend" draggable="true">intra-action</p>
+			<p class="blend" draggable="true">intra-action</p>
+			<p class="blend" draggable="true">intra-action</p>
+			<p class="blend" draggable="true">intra-action</p>
+			<p class="blend" draggable="true">intra-action</p>
+			<p class="blend" draggable="true">intra-action</p>
+			<p class="blend" draggable="true">intra-action</p>
+			<p class="blend" draggable="true">intra-action</p>
+			<p class="blend" draggable="true">intra-action</p>
+			<p class="blend" draggable="true">intra-action</p>
+			<p class="blend" draggable="true">intra-action</p>
+			<p class="blend" draggable="true">intra-action</p>
+			<p class="blend" draggable="true">intra-action</p>
+			<p class="blend" draggable="true">intra-action</p>
+			<p class="blend" draggable="true">intra-action</p>
+			<p class="blend" draggable="true">intra-action</p>
+			<p class="blend" draggable="true">intra-action</p>
+			<p class="blend" draggable="true">intra-action</p>
+			<p class="blend" draggable="true">intra-action</p>
+			<p class="blend" draggable="true">intra-action</p>
+			<p class="blend" draggable="true">intra-action</p>
+		</div>
+		<div class="set-sibling-index intra-section intra-section-2" id="intra-section-2">
+			<p class="blend" draggable="true">intra-action</p>
+			<p class="blend" draggable="true">intra-action</p>
+			<p class="blend" draggable="true">intra-action</p>
+			<p class="blend" draggable="true">intra-action</p>
+			<p class="blend" draggable="true">intra-action</p>
+			<p class="blend" draggable="true">intra-action</p>
+			<p class="blend" draggable="true">intra-action</p>
+			<p class="blend" draggable="true">intra-action</p>
+			<p class="blend" draggable="true">intra-action</p>
+			<p class="blend" draggable="true">intra-action</p>
+			<p class="blend" draggable="true">intra-action</p>
+			<p class="blend" draggable="true">intra-action</p>
+			<p class="blend" draggable="true">intra-action</p>
+			<p class="blend" draggable="true">intra-action</p>
+			<p class="blend" draggable="true">intra-action</p>
+			<p class="blend" draggable="true">intra-action</p>
+			<p class="blend" draggable="true">intra-action</p>
+			<p class="blend" draggable="true">intra-action</p>
+			<p class="blend" draggable="true">intra-action</p>
+			<p class="blend" draggable="true">intra-action</p>
+			<p class="blend" draggable="true">intra-action</p>
+			<p class="blend" draggable="true">intra-action</p>
+		</div>
+		<div class="set-sibling-index intra-section intra-section-3" id="intra-section-3">
+			<p class="blend" draggable="true">intra-action</p>
+			<p class="blend" draggable="true">intra-action</p>
+			<p class="blend" draggable="true">intra-action</p>
+			<p class="blend" draggable="true">intra-action</p>
+			<p class="blend" draggable="true">intra-action</p>
+			<p class="blend" draggable="true">intra-action</p>
+			<p class="blend" draggable="true">intra-action</p>
+			<p class="blend" draggable="true">intra-action</p>
+			<p class="blend" draggable="true">intra-action</p>
+			<p class="blend" draggable="true">intra-action</p>
+			<p class="blend" draggable="true">intra-action</p>
+			<p class="blend" draggable="true">intra-action</p>
+			<p class="blend" draggable="true">intra-action</p>
+			<p class="blend" draggable="true">intra-action</p>
+			<p class="blend" draggable="true">intra-action</p>
+			<p class="blend" draggable="true">intra-action</p>
+			<p class="blend" draggable="true">intra-action</p>
+			<p class="blend" draggable="true">intra-action</p>
+			<p class="blend" draggable="true">intra-action</p>
+			<p class="blend" draggable="true">intra-action</p>
+			<p class="blend" draggable="true">intra-action</p>
+			<p class="blend" draggable="true">intra-action</p>
+		</div>
+</div>
+    </div>
+</div>
+
+<!-- Span-split and sibling-index helpers of the site; runs before the animation scripts -->
+<script src="site/index.js"></script>
+<script type="module">
+	// @ts-nocheck
+	// =====================================
+	// MARK: Section 1
+	// =====================================
+	// define section to do drag & drop in
+	const section = document.getElementById("intra-section-1");
+	// define the element that is being dragged
+	let draggedEl = null;
+	// define the offset where the element is being dropped
+	let offsetX = 0;
+	let offsetY = 0;
+
+
+	// Make a .blend elements draggable
+	document.querySelectorAll(".blend").forEach(el => {
+		// what happens when dragging is initiated
+		el.addEventListener("dragstart", e => {
+			// which element is being dragged
+			draggedEl = e.target;
+
+			// get the mouse coordinates
+			const rect = draggedEl.getBoundingClientRect();
+			
+			// distance from the element's top‑left corner to the mouse pointer, in viewport coordinates
+			offsetX = e.clientX - rect.left;
+			offsetY = e.clientY - rect.top;
+
+			// For some browsers, required to start drag
+			e.dataTransfer.setData("text/plain", "");
+			// add dragging class for styling
+			draggedEl.classList.add("dragging");
+		});
+
+		// remove dragging class when ending the drag
+		el.addEventListener("dragend", () => {
+				if (draggedEl) {
+					draggedEl.classList.remove("dragging");
+					draggedEl = null;
+				}
+			});
+		});
+
+
+		// Make drop possible inside the section
+		section.addEventListener("dragover", e => {
+			e.preventDefault();
+		});
+
+		
+
+		// Define the what happens on drop, making sure it's dropped inside the container
+		section.addEventListener("drop", e => {
+			e.preventDefault();
+			if (!draggedEl) return;
+
+			// get size of the section
+			const sectionRect = section.getBoundingClientRect();
+
+			// size of element to be dropped, offsetWidth gets the size including padding and margin
+			const elWidth = draggedEl.offsetWidth;
+			const elHeight = draggedEl.offsetHeight;
+
+			// Position of the element relative to the section
+			// mouse position - left edge of the section - distance from the element’s left edge to the mouse when you started dragging
+			let x = e.clientX - sectionRect.left - offsetX;
+			let y = e.clientY - sectionRect.top - offsetY;
+
+			// make sure the element doesn't escape the section
+			const maxX = sectionRect.width - elWidth;
+			const maxY = sectionRect.height - elHeight;
+			// max -> use the largest number of any of the two, so anything below 0 is always 0
+			// min -> use the smallest number -> if x is bigger than maxX use maxX instead
+			x = Math.max(0, Math.min(x, maxX));
+			y = Math.max(0, Math.min(y, maxY));
+
+			draggedEl.style.position = "absolute";
+			draggedEl.style.left = x + "px";
+			draggedEl.style.top = y + "px";
+
+
+			draggedEl.classList.remove("dragging");
+			draggedEl.classList.add("dragged");
+
+			draggedEl = null;
+		});
+
+
+	// =====================================
+	// MARK: Section 2
+	// =====================================
+	const section2 = document.getElementById("intra-section-2");
+	let draggedEl2 = null;
+	let offsetX2 = 0;
+	let offsetY2 = 0;
+
+
+	document.querySelectorAll(".blend").forEach(el => {
+		el.addEventListener("dragstart", e => {
+			draggedEl2 = e.target;
+
+			const rect = draggedEl2.getBoundingClientRect();
+			offsetX2 = e.clientX - rect.left;
+			offsetY2 = e.clientY - rect.top;
+
+			e.dataTransfer.setData("text/plain", "");
+
+			draggedEl2.classList.add("dragging");
+		});
+
+
+		el.addEventListener("dragend", () => {
+			if (draggedEl2) {
+				draggedEl2.classList.remove("dragging");
+				draggedEl2 = null;
+			}
+		});
+
+	});
+
+
+	section2.addEventListener("dragover", e => {
+		e.preventDefault();
+	});
+
+
+	section2.addEventListener("drop", e => {
+		e.preventDefault();
+		if (!draggedEl2) return;
+
+		const sectionRect = section2.getBoundingClientRect();
+	
+		const elWidth = draggedEl2.offsetWidth;
+		const elHeight = draggedEl2.offsetHeight;
+
+		let x = e.clientX - sectionRect.left - offsetX2;
+		let y = e.clientY - sectionRect.top - offsetY2;
+
+
+		const maxX = sectionRect.width - elWidth;
+		const maxY = sectionRect.height - elHeight;
+		x = Math.max(0, Math.min(x, maxX));
+		y = Math.max(0, Math.min(y, maxY));
+
+		draggedEl2.style.position = "absolute";
+		draggedEl2.style.left = x + "px";
+		draggedEl2.style.top = y + "px";
+
+		draggedEl2.classList.remove("dragging");
+		draggedEl2.classList.add("dragged");
+		draggedEl2 = null;
+	});
+
+
+	// =====================================
+	// MARK: Section 3
+	// =====================================
+
+	const section3 = document.getElementById("intra-section-3");
+	let draggedEl3 = null;
+	let offsetX3 = 0;
+	let offsetY3 = 0;
+
+	document.querySelectorAll(".blend").forEach(el => {
+		el.addEventListener("dragstart", e => {
+			draggedEl3 = e.target;
+
+			const rect = draggedEl3.getBoundingClientRect();
+			offsetX3 = e.clientX - rect.left;
+			offsetY3 = e.clientY - rect.top;
+
+			e.dataTransfer.setData("text/plain", "");
+
+			draggedEl3.classList.add("dragging");
+
+		});
+
+		el.addEventListener("dragend", () => {
+		if (draggedEl3) {
+				draggedEl3.classList.remove("dragging");
+				draggedEl3 = null;
+			}
+		});
+
+	});
+
+
+	section3.addEventListener("dragover", e => {
+		e.preventDefault();
+	});
+
+	section3.addEventListener("drop", e => {
+		e.preventDefault();
+		if (!draggedEl3) return;
+
+		const sectionRect = section3.getBoundingClientRect();
+
+		const elWidth = draggedEl3.offsetWidth;
+		const elHeight = draggedEl3.offsetHeight;
+
+		let x = e.clientX - sectionRect.left - offsetX3;
+		let y = e.clientY - sectionRect.top - offsetY3;
+
+		const maxX = sectionRect.width - elWidth;
+		const maxY = sectionRect.height - elHeight;
+		x = Math.max(0, Math.min(x, maxX));
+		y = Math.max(0, Math.min(y, maxY));
+
+
+		draggedEl3.style.position = "absolute";
+		draggedEl3.style.left = x + "px";
+		draggedEl3.style.top = y + "px";
+		draggedEl3.classList.remove("dragging");
+		draggedEl3.classList.add("dragged");
+		draggedEl3 = null;
+	});
+</script>
+<script type="module">
+	// @ts-nocheck
+	// =====================================
+	// MARK: Animation Pause button
+	// =====================================
+
+	const animationButton = document.querySelector(".animation-button");
+	const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+	let animationPlaying;
+
+	// check if the user has motion preferences and set the according class on the button
+	if(prefersReducedMotion === true) {
+		animationButton?.classList.add("stop-animation");
+		animationPlaying = false;
+	} else {
+		animationButton?.classList.add("play-animation");
+		animationPlaying = true;
+	}
+
+	// toggle animation
+	function toggleAnimation() {
+		animationButton.classList.toggle("stop-animation");
+		animationButton.classList.toggle("play-animation");
+
+		let animationClass = document.querySelector(".stop-animation");
+
+		animationClass ? animationPlaying = false : animationPlaying = true;
+
+		// use this if ever implemented in general js
+		// if (typeof onAnimationStateChange === "function") {
+		// 	onAnimationStateChange(animationPlaying);
+		// }
+	}
+
+	animationButton?.addEventListener("click", toggleAnimation)
+
+</script>
+</body>
+</html>

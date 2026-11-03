@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width">
+    <title>Adaptation</title>
+    <link rel="stylesheet" href="site/general.css">
+    <link rel="stylesheet" href="site/detail-page.css">
+    <link rel="stylesheet" href="css/adaptation.css">
+    <link rel="stylesheet" href="site/presentation.css">
+</head>
+<body>
+<!-- Same wrapper as the detail page of the glossary site (src/components/Header.astro) -->
+<div class="animation-section">
+    <div class="hidden-section" aria-hidden="true">
+        <button class="animation-button"><span></span></button>
+<div class="container">
+    <!-- ===================================== -->
+    <!-- MARK: Adaptation Animation            -->
+    <!-- ===================================== -->
+    <div class="animation-section active anim-5">
+        <!-- The animation is made up of 3 vertical strips (black, white, black) that can be resized -->
+        <div class="adaptation-background">
+            <div class="adaptation-pane pane-black"></div>
+            <div class="adaptation-pane pane-white"></div>
+            <div class="adaptation-pane pane-black"></div>
+        </div>
+        <!-- The word "ADAPTATION" is displayed on top of the strips -->
+        <div class="adaptation-word">ADAPTATION</div>
+    </div>
+</div>
+    </div>
+</div>
+
+<!-- Span-split and sibling-index helpers of the site; runs before the animation scripts -->
+<script src="site/index.js"></script>
+<script type="module">
+    // @ts-nocheck
+
+    // =====================================
+    // MARK: Adaptation Animation
+    // This animation shows 3 vertical strips (black, white, black).
+    // The strips automatically resize to random widths every 1.5 seconds.
+    // The user can also click and drag the borders between the strips
+    // to manually resize them. When the user stops dragging,
+    // the automatic animation starts again after 1 second.
+    // =====================================
+
+    // ---------- Setup ----------
+    // Select the elements we need from the page
+
+    // The container that holds all 3 strips
+    const background = document.querySelector(".adaptation-background");
+
+    // Select all 3 strips and give them individual names
+    const panes = document.querySelectorAll(".adaptation-pane");
+    const leftPane = panes[0]; // first black strip
+    const middlePane = panes[1]; // white strip
+    const rightPane = panes[2]; // second black strip
+
+    // Keep track of what the user is doing:
+    let draggingSide = null; // which border the user is dragging ("left" or "right"), or null if not dragging
+    let idleTimer = null; // a countdown that starts the automatic animation after the user stops interacting
+    let animationTimer = null; // a countdown that keeps the automatic animation looping
+
+    // ---------- Functions ----------
+
+    // Called when the user releases the mouse / lifts their finger.
+    // Resets the drag state and starts the countdown to resume the automatic animation.
+    const stopDragging = () => {
+        draggingSide = null;
+        background.style.cursor = "default";
+        resetIdleTimer();
+    };
+
+    // Runs the automatic animation:
+    // Picks 3 random widths and smoothly slides the strips to those sizes.
+    // Then calls itself again after 1.5 seconds to keep looping.
+    const playAnimation = () => {
+        // Enable smooth sliding so the size changes look animated
+        panes.forEach(
+            (pane) => (pane.style.transition = "flex 1s ease-in-out"),
+        );
+
+        // Generate a random width for each strip (between 10% and 43% of the total width)
+        const p1 = Math.random() * 33 + 10;
+        const p2 = Math.random() * 33 + 10;
+        // The third strip gets whatever space is left, but at least 10%
+        const p3 = Math.max(10, 100 - p1 - p2);
+
+        // Apply the new widths to each strip
+        leftPane.style.flex = p1;
+        middlePane.style.flex = p2;
+        rightPane.style.flex = p3;
+
+        // Repeat this function after 1.5 seconds to keep the animation going
+        animationTimer = setTimeout(playAnimation, 1500);
+    };
+
+    // Stops the automatic animation immediately.
+    // Freezes the strips at their current position so they don't jump to a new size.
+    const stopAnimation = () => {
+        // Cancel the next scheduled animation step
+        if (animationTimer) clearTimeout(animationTimer);
+
+        // Lock each strip at its current visual width (as a percentage)
+        // so the layout doesn't suddenly snap when it stops
+        const width = background.getBoundingClientRect().width;
+        leftPane.style.flex =
+            (leftPane.getBoundingClientRect().width / width) * 100;
+        middlePane.style.flex =
+            (middlePane.getBoundingClientRect().width / width) * 100;
+        rightPane.style.flex =
+            (rightPane.getBoundingClientRect().width / width) * 100;
+
+        // Disable smooth sliding so that manual dragging feels instant
+        panes.forEach((pane) => (pane.style.transition = "none"));
+    };
+
+    // Restarts the idle countdown.
+    // If the user is not dragging, the automatic animation will resume after 1 second.
+    const resetIdleTimer = () => {
+        // Cancel any existing countdown
+        if (idleTimer) clearTimeout(idleTimer);
+
+        // Only start a new countdown if the user is not currently dragging
+        if (draggingSide === null) {
+            idleTimer = setTimeout(playAnimation, 1000);
+        }
+    };
+
+    // ---------- Initialization ----------
+
+    // On mobile, prevent the page from scrolling when the user touches the animation
+    background.style.touchAction = "none";
+
+    // Start the idle countdown, the animation will begin after 1 second
+    resetIdleTimer();
+
+    // =====================================
+    // MARK: Dragging Logic
+    // Lets the user click (or tap) and drag the borders between the strips
+    // to manually control their widths.
+    // =====================================
+
+    // When the user clicks or taps on the animation area
+    background.addEventListener("pointerdown", (event) => {
+        // Stop the automatic animation so the user can take over
+        stopAnimation();
+
+        // Find the position of the two borders between the strips
+        const leftEdge = leftPane.getBoundingClientRect().right; // border between left and middle strip
+        const rightEdge = rightPane.getBoundingClientRect().left; // border between middle and right strip
+
+        // Figure out which border is closer to where the user clicked,
+        // and start dragging that one
+        if (
+            Math.abs(event.clientX - leftEdge) <
+            Math.abs(event.clientX - rightEdge)
+        ) {
+            draggingSide = "left";
+        } else {
+            draggingSide = "right";
+        }
+
+        // Change the cursor to a drag arrow cursor to show the user they can drag
+        background.style.cursor = "ew-resize";
+
+        // Keep tracking the mouse even if it moves outside the animation area
+        background.setPointerCapture(event.pointerId);
+    });
+
+    // When the user moves the mouse or drags their finger
+    background.addEventListener("pointermove", (event) => {
+        // If the user is not dragging, just show a resize cursor
+        // when they hover near one of the borders (within 40 pixels)
+        if (draggingSide === null) {
+            const leftEdge = leftPane.getBoundingClientRect().right;
+            const rightEdge = rightPane.getBoundingClientRect().left;
+            const nearLeft = Math.abs(event.clientX - leftEdge) < 40;
+            const nearRight = Math.abs(event.clientX - rightEdge) < 40;
+
+            background.style.cursor =
+                nearLeft || nearRight ? "ew-resize" : "default";
+            return;
+        }
+
+        // The user is dragging: reset the idle countdown so the
+        // automatic animation doesn't restart while they're still interacting
+        resetIdleTimer();
+
+        // Convert the mouse position to a percentage (0% = left edge, 100% = right edge)
+        const rect = background.getBoundingClientRect();
+        const width = rect.width;
+        let mouse = Math.max(
+            0,
+            Math.min(100, ((event.clientX - rect.left) / width) * 100),
+        );
+
+        // Get the current widths of the left and right strips as percentages
+        let left = (leftPane.getBoundingClientRect().width / width) * 100;
+        let right = (rightPane.getBoundingClientRect().width / width) * 100;
+
+        // Move the border that the user is dragging to follow the mouse,
+        // but don't let it overlap the other border
+        if (draggingSide === "left") {
+            left = Math.min(mouse, 100 - right);
+        } else {
+            right = Math.min(100 - mouse, 100 - left);
+        }
+
+        // The middle strip fills whatever space is left between the other two
+        const middle = 100 - left - right;
+
+        // Apply the new widths
+        leftPane.style.flex = left;
+        middlePane.style.flex = middle;
+        rightPane.style.flex = right;
+    });
+
+    // When the user releases the mouse button or lifts their finger, stop dragging
+    background.addEventListener("pointerup", stopDragging);
+    // Also stop if the browser cancels the interaction
+    background.addEventListener("pointercancel", stopDragging);
+</script>
+</body>
+</html>

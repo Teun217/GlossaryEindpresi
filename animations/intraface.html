@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width">
+    <title>Intraface</title>
+    <link rel="stylesheet" href="site/general.css">
+    <link rel="stylesheet" href="site/detail-page.css">
+    <link rel="stylesheet" href="css/intraface.css">
+    <link rel="stylesheet" href="site/presentation.css">
+</head>
+<body>
+<!-- Same wrapper as the detail page of the glossary site (src/components/Header.astro) -->
+<div class="animation-section">
+    <div class="hidden-section" aria-hidden="true">
+        <button class="animation-button"><span></span></button>
+<div class="intraface-wrapper">
+    <div class="scene">
+        <div class="cube">
+            <!-- 6 faces -->
+            <div class="face front">
+                <div class="ascii-container">
+                    <div class="ascii-layer base"></div><div
+                        class="ascii-layer glitch-1"
+                    >
+                    </div><div class="ascii-layer glitch-2 invert"></div>
+                </div>
+            </div>
+            <div class="face back">
+                <div class="ascii-container">
+                    <div class="ascii-layer base"></div><div
+                        class="ascii-layer glitch-1"
+                    >
+                    </div><div class="ascii-layer glitch-2 invert"></div>
+                </div>
+            </div>
+            <div class="face left">
+                <div class="ascii-container">
+                    <div class="ascii-layer base"></div><div
+                        class="ascii-layer glitch-1"
+                    >
+                    </div><div class="ascii-layer glitch-2 invert"></div>
+                </div>
+            </div>
+            <div class="face right">
+                <div class="ascii-container">
+                    <div class="ascii-layer base"></div><div
+                        class="ascii-layer glitch-1"
+                    >
+                    </div><div class="ascii-layer glitch-2 invert"></div>
+                </div>
+            </div>
+            <div class="face top">
+                <div class="ascii-container">
+                    <div class="ascii-layer base"></div><div
+                        class="ascii-layer glitch-1"
+                    >
+                    </div><div class="ascii-layer glitch-2 invert"></div>
+                </div>
+            </div>
+            <div class="face bottom">
+                <div class="ascii-container">
+                    <div class="ascii-layer base"></div><div
+                        class="ascii-layer glitch-1"
+                    >
+                    </div><div class="ascii-layer glitch-2 invert"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+    </div>
+</div>
+
+<!-- Span-split and sibling-index helpers of the site; runs before the animation scripts -->
+<script src="site/index.js"></script>
+<script type="module">
+    // @ts-nocheck
+
+    // =====================================
+    // MARK: Intraface Animation
+    // =====================================
+
+    // Find the wrapper
+    const wrapper = document.querySelector(".intraface-wrapper");
+
+    // Theme switching (automatic + on click)
+    let themeInterval;
+
+    function toggleTheme() {
+        wrapper.classList.toggle("inverted");
+    }
+
+    function startThemeInterval() {
+        themeInterval = setInterval(toggleTheme, 4000);
+    }
+
+    // Start the timer for the first time
+    startThemeInterval();
+
+    // Invert when the user clicks the wrapper
+    wrapper.addEventListener("click", () => {
+        toggleTheme();
+        // Reset the timer so it doesn't flip back right after the click
+        clearInterval(themeInterval);
+        startThemeInterval();
+    });
+
+    // Character sets for the dynamic generator
+    const symbolsFull = "@%#*+=-::";
+    const symbolsHeavy = "@%#*";
+    const symbolsLight = "+=-::";
+    const numbersFull = "0123456789";
+    const numbersBinary = "01";
+
+    function generateRandomString(chars, length) {
+        let result = "";
+        for (let i = 0; i < length; i++) {
+            result += chars.charAt(Math.floor(Math.random() * chars.length));
+        }
+        return result;
+    }
+
+    function generateFragment(type) {
+        if (Math.random() < 0.15) return "        ";
+
+        let len = Math.floor(Math.random() * 6) + 3;
+
+        switch (type) {
+            case "front":
+                return generateRandomString(symbolsFull, len);
+            case "back":
+                return generateRandomString(numbersBinary, len + 4);
+            case "left":
+                return generateRandomString(numbersFull, len);
+            case "right":
+                return generateRandomString(symbolsFull + numbersFull, len);
+            case "top":
+                return generateRandomString(symbolsHeavy, len);
+            case "bottom":
+                return generateRandomString(symbolsLight, len);
+            default:
+                return generateRandomString(symbolsFull, len);
+        }
+    }
+
+    function generateTypingGlitchLayer(wordsArray) {
+        return wordsArray
+            .map((w) => {
+                if (w === "        ") return w;
+                if (w.length > 3 && Math.random() < 0.4) {
+                    let keepLen =
+                        Math.floor(Math.random() * (w.length - 1)) + 1;
+                    let chopped = w.substring(0, keepLen);
+                    return chopped + (Math.random() > 0.5 ? "_" : "");
+                }
+                return w;
+            })
+            .join("  ");
+    }
+
+    // Only look for faces inside the wrapper (not the whole page)
+    const faceElements = wrapper.querySelectorAll(".face");
+    const faceData = [];
+
+    faceElements.forEach((face) => {
+        const type = face.classList[1];
+
+        let words = [];
+        for (let i = 0; i < 100; i++) {
+            words.push(generateFragment(type));
+        }
+
+        faceData.push({
+            type: type,
+            words: words,
+            baseLayer: face.querySelector(".base"),
+            glitch1Layer: face.querySelector(".glitch-1"),
+            glitch2Layer: face.querySelector(".glitch-2"),
+        });
+    });
+
+    // Pre-compute the glitch-2 "intraface" text (it never changes)
+    const intrafaceText = new Array(100).fill("intraface").join("  ");
+    faceData.forEach((data) => {
+        data.glitch2Layer.textContent = intrafaceText;
+    });
+
+    // Use requestAnimationFrame instead of setInterval for a smoother animation
+    let lastUpdate = 0;
+    const UPDATE_INTERVAL = 120; // ms between text updates
+
+    function animateIntraface(timestamp) {
+        if (timestamp - lastUpdate >= UPDATE_INTERVAL) {
+            lastUpdate = timestamp;
+
+            faceData.forEach((data) => {
+                // Shift and add a new word (for the base layer)
+                data.words.shift();
+                data.words.push(generateFragment(data.type));
+
+                // Base and glitch-1 (not inverted) show the normal matrix-like code
+                data.baseLayer.textContent = data.words.join("  ");
+                data.glitch1Layer.textContent = generateTypingGlitchLayer(
+                    data.words,
+                );
+            });
+        }
+
+        requestAnimationFrame(animateIntraface);
+    }
+
+    requestAnimationFrame(animateIntraface);
+</script>
+</body>
+</html>

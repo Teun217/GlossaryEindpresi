@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width">
+    <title>Invisible</title>
+    <link rel="stylesheet" href="site/general.css">
+    <link rel="stylesheet" href="site/detail-page.css">
+    <link rel="stylesheet" href="css/invisible.css">
+    <link rel="stylesheet" href="site/presentation.css">
+</head>
+<body>
+<!-- Same wrapper as the detail page of the glossary site (src/components/Header.astro) -->
+<div class="animation-section">
+    <div class="hidden-section" aria-hidden="true">
+        <button class="animation-button"><span></span></button>
+<div class="invisible-container">
+  <p class="invisible-title">INVISIBLE</p>
+  <div class="mouse-tracker-container">
+    <p class="background-word"></p>
+  </div>
+</div>
+    </div>
+</div>
+
+<!-- Span-split and sibling-index helpers of the site; runs before the animation scripts -->
+<script src="site/index.js"></script>
+<script type="module">
+// =====================================
+// MARK: move letters
+// =====================================
+// @ts-nocheck
+
+// ---------- creating background ----------
+const backgroundText = document.querySelector(".background-word")
+if (backgroundText) {
+  // repeats the word invisible a whole lot
+  backgroundText.textContent = "invisible".repeat(450)
+}
+
+// selects the background text container to also use it to track the mouse position
+const container = document.querySelector(".mouse-tracker-container")
+
+if (backgroundText && container) {
+    container.addEventListener("mousemove", (e) => {
+        const widthX = container.clientWidth
+        const heightY = container.clientHeight
+        // Get height and width of textcontainer
+
+        const centerX = widthX / 2
+        const centerY = heightY / 2
+        // Gets center of the axis
+
+        const rect = container.getBoundingClientRect()
+        const mouseX = e.clientX - rect.left
+        const mouseY = e.clientY - rect.top
+        // Tracks mousePosition
+        // Source: https://stackoverflow.com/questions/3234256/find-mouse-position-relative-to-element
+
+        const ratioX = Math.abs(mouseX - centerX) / centerX
+        const ratioY = Math.abs(mouseY - centerY) / centerY
+        // Calcs the percentage of mouse from the center
+        console.log("mouseX" + ratioX)
+        console.log("mouseY" + ratioY) 
+
+        const biggest = 1 - Math.max(ratioX, ratioY)
+        // Get's biggest of the two percentages
+        const spacing = (2 * biggest) + 0.02
+        backgroundText.style.letterSpacing = spacing + "em"
+        backgroundText.style.lineHeight = (0.75 + 2 * spacing) + "em"
+        // Changes letter spacing and lineheight based on mouseposition.
+    })
+}
+</script>
+</body>
+</html>

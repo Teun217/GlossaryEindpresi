@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width">
+    <title>Out of Control</title>
+    <link rel="stylesheet" href="site/general.css">
+    <link rel="stylesheet" href="site/detail-page.css">
+    <link rel="stylesheet" href="css/out-of-control.css">
+    <link rel="stylesheet" href="site/presentation.css">
+</head>
+<body>
+<!-- Same wrapper as the detail page of the glossary site (src/components/Header.astro) -->
+<div class="animation-section">
+    <div class="hidden-section" aria-hidden="true">
+        <button class="animation-button"><span></span></button>
+<div class="container">
+    <div class="animation-section active anim-out-of-control">
+        <canvas id="atomism-canvas"></canvas>
+    </div>
+</div>
+    </div>
+</div>
+
+<!-- Span-split and sibling-index helpers of the site; runs before the animation scripts -->
+<script src="site/index.js"></script>
+<script type="module">
+    // @ts-nocheck
+    // =====================================
+    // MARK: Out of Control Animation
+    // =====================================
+
+    const canvas = document.getElementById("atomism-canvas");
+    const ctx = canvas.getContext("2d");
+    const container = canvas.closest(".animation-section");
+
+    // Get CSS variables to use in the canvas
+    const containerStyles = getComputedStyle(container);
+    const bgColor = containerStyles.getPropertyValue("--bg-color").trim();
+    const fgColor = containerStyles.getPropertyValue("--fg-color").trim();
+    const bgRgb = containerStyles.getPropertyValue("--bg-rgb").trim();
+    const fgRgb = containerStyles.getPropertyValue("--fg-rgb").trim();
+
+    // ---------- State ----------
+    let width, height;
+    let time = 0;
+    let mouse = { x: -1000, y: -1000, isDown: false };
+
+    // Word/letter state
+    let word = [];          // Target points for the particles
+    let wx, wy;             // Rendered positions (reused every frame for performance)
+    let step = 8;           // Grid spacing for the word particles
+    let mode = "letters";   // 'letters' or 'whitespace'
+    let style = "atom";    // 'atom', 'diamond' or 'pixel'
+    let progress = 0;       // 0 = chaos, 1 = word fully visible
+
+    // ---------- Helper: get position relative to canvas ----------
+    function getCanvasPos(clientX, clientY) {
+        const rect = canvas.getBoundingClientRect();
+        return { x: clientX - rect.left, y: clientY - rect.top };
+    }
+
+    // ---------- Initialisation ----------
+    function buildWord() {
+        const offCanvas = document.createElement("canvas");
+        offCanvas.width = width; 
+        offCanvas.height = height;
+        const offCtx = offCanvas.getContext("2d");
+
+        const lines = ["OUT OF", "CONTROL"];
+        const fontFamily = '"Arial Black", Impact, Arial, sans-serif';
+        
+        // Calculate a responsive font size
+        offCtx.font = `900 100px ${fontFamily}`;
+        const maxW = Math.max(...lines.map(l => offCtx.measureText(l).width));
+        const fontSize = Math.min((width * 0.86 / maxW) * 100, height * 0.36);
+
+        // Draw the text to an offscreen canvas
+        offCtx.font = `900 ${fontSize}px ${fontFamily}`;
+        offCtx.textAlign = "center";
+        offCtx.textBaseline = "middle";
+        offCtx.fillStyle = fgColor;
+        lines.forEach((line, index) => {
+            offCtx.fillText(line, width / 2, height / 2 + (index - 0.5) * fontSize);
+        });
+
+        step = Math.max(6, Math.round(Math.min(width, height) / 110));
+        const data = offCtx.getImageData(0, 0, width, height).data;
+
+        word = [];
+        for (let y = step / 2; y < height; y += step) {
+            for (let x = step / 2; x < width; x += step) {
+                // Check the alpha channel to see whether the pixel belongs to the text
+                if (data[((y | 0) * width + (x | 0)) * 4 + 3] > 128) {
+                    word.push({
+                        tx: x, 
+                        ty: y,
+                        ax: Math.random() - 0.5,
+                        ay: Math.random() - 0.5
+                    });
+                }
+            }
+        }
+        
+        wx = new Float32Array(word.length);
+        wy = new Float32Array(word.length);
+    }
+
+    function resizeCanvas() {
+        width = container.clientWidth;
+        height = container.clientHeight;
+        canvas.width = width;
+        canvas.height = height;
+        buildWord();
+    }
+
+    // ---------- Event listeners (scoped to canvas/container) ----------
+    window.addEventListener("resize", resizeCanvas);
+
+    canvas.addEventListener("mousemove", (e) => {
+        const pos = getCanvasPos(e.clientX, e.clientY);
+        mouse.x = pos.x; mouse.y = pos.y;
+    });
+    canvas.addEventListener("mousedown", () => { mouse.isDown = true; });
+    canvas.addEventListener("mouseup", () => { mouse.isDown = false; });
+    canvas.addEventListener("mouseleave", () => {
+        mouse.isDown = false;
+        mouse.x = -1000; mouse.y = -1000;
+    });
+
+    canvas.addEventListener("touchmove", (e) => {
+        const pos = getCanvasPos(e.touches[0].clientX, e.touches[0].clientY);
+        mouse.x = pos.x;
+        mouse.y = pos.y;
+    });
+    canvas.addEventListener("touchstart", (e) => {
+        const pos = getCanvasPos(e.touches[0].clientX, e.touches[0].clientY);
+        mouse.x = pos.x;
+        mouse.y = pos.y;
+        mouse.isDown = true;
+    });
+    canvas.addEventListener("touchend", () => {
+        mouse.isDown = false;
+        mouse.x = -1000;
+        mouse.y = -1000;
+    });
+
+    window.addEventListener("keydown", (e) => {
+        if (e.key.toLowerCase() === "w") {
+            mode = mode === "letters" ? "whitespace" : "letters";
+        }
+        if (e.key.toLowerCase() === "s") {
+            const stylesList = ["atom", "diamond", "pixel"];
+            style = stylesList[(stylesList.indexOf(style) + 1) % stylesList.length];
+        }
+    });
+
+    // ---------- Render logic ----------
+    function drawWord() {
+        if (progress < 0.005) return;
+        
+        const ease = progress * progress * (3 - 2 * progress); // Smooth transition (smoothstep)
+        const invEase = 1 - ease;
+
+        // Calculate positions by interpolating from chaos to target (the word)
+        for (let i = 0; i < word.length; i++) {
+            const w = word[i];
+            wx[i] = w.tx + w.ax * invEase * width * 0.9 + (Math.random() - 0.5) * (invEase * 80 + 1.5);
+            wy[i] = w.ty + w.ay * invEase * height * 0.9 + (Math.random() - 0.5) * (invEase * 80 + 1.5);
+        }
+
+        // Pass 1: dark background masking (creates a halo/hole in the chaos)
+        const darkSize = mode === "letters" ? step * 2.4 : step * 1.6;
+        ctx.fillStyle = `rgba(${bgRgb}, ${Math.min(1, ease * 1.3)})`;
+        for (let i = 0; i < word.length; i++) {
+            ctx.fillRect(wx[i] - darkSize / 2, wy[i] - darkSize / 2, darkSize, darkSize);
+        }
+
+        // Pass 2: draw the letters (only in letter mode)
+        if (mode === "letters") {
+            ctx.globalAlpha = ease;
+            ctx.fillStyle = fgColor;
+            ctx.strokeStyle = fgColor;
+
+            if (style === "atom") {
+                // Hollow squares with a core, in an alternating checkerboard pattern
+                const s = step * 1.15;
+                const n = s * 0.4;
+                ctx.lineWidth = Math.max(1, step * 0.14);
+                ctx.beginPath();
+                for (let i = 0; i < word.length; i++) {
+                    ctx.rect(wx[i] - s / 2, wy[i] - s / 2, s, s);
+                }
+                ctx.stroke();
+                
+                for (let i = 0; i < word.length; i++) {
+                    const w = word[i];
+                    if (((w.tx / step | 0) + (w.ty / step | 0)) % 2 === 0) {
+                        ctx.fillRect(wx[i] - n / 2, wy[i] - n / 2, n, n);
+                    }
+                }
+            } else if (style === "diamond") {
+                // Rotated squares (diamonds)
+                const h = step * 0.7;
+                ctx.beginPath();
+                for (let i = 0; i < word.length; i++) {
+                    const x = wx[i], y = wy[i];
+                    ctx.moveTo(x, y - h);
+                    ctx.lineTo(x + h, y);
+                    ctx.lineTo(x, y + h);
+                    ctx.lineTo(x - h, y);
+                    ctx.closePath();
+                }
+                ctx.fill();
+            } else {
+                // Default loose pixel blocks
+                const s = step * 0.7;
+                for (let i = 0; i < word.length; i++) {
+                    ctx.fillRect(wx[i] - s / 2, wy[i] - s / 2, s, s);
+                }
+            }
+            ctx.globalAlpha = 1;
+        }
+    }
+
+    function draw() {
+        // Motion blur background: longer trails while the mouse is pressed
+        const fadeAlpha = mouse.isDown ? 0.08 : 0.2;
+        ctx.fillStyle = `rgba(${bgRgb}, ${fadeAlpha})`;
+        ctx.fillRect(0, 0, width, height);
+
+        const cols = 24;
+        const rows = 16;
+        const spacingX = width / cols;
+        const spacingY = height / rows;
+
+        // Draw the background chaos grid
+        for (let i = 0; i < cols; i++) {
+            for (let j = 0; j < rows; j++) {
+                let baseX = spacingX * i + spacingX / 2;
+                let baseY = spacingY * j + spacingY / 2;
+
+                let wave = Math.sin(time + (i * 0.3) + (j * 0.3));
+                let cosWave = Math.cos(time * 0.5 - (i * 0.2) + (j * 0.2));
+
+                let size = Math.abs(wave) * (spacingX * 0.6);
+                let rotation = cosWave * Math.PI;
+
+                let dx = baseX - mouse.x;
+                let dy = baseY - mouse.y;
+                let dist = Math.sqrt(dx * dx + dy * dy);
+
+                let renderX = baseX;
+                let renderY = baseY;
+
+                if (mouse.isDown) {
+                    renderX += (Math.random() - 0.5) * 120;
+                    renderY += (Math.random() - 0.5) * 120;
+                    rotation += Math.random() * 20;
+                    size *= Math.random() * 2;
+                } else if (dist < 200) {
+                    let force = (200 - dist) / 200;
+                    renderX += (dx / dist) * force * 50;
+                    renderY += (dy / dist) * force * 50;
+                    rotation += force * 5;
+                }
+
+                ctx.save();
+                ctx.translate(renderX, renderY);
+                ctx.rotate(rotation);
+
+                ctx.strokeStyle = `rgba(${fgRgb}, ${mouse.isDown ? 1 : 0.85})`;
+                ctx.lineWidth = mouse.isDown ? 3 : 1.5;
+                ctx.strokeRect(-size / 2, -size / 2, size, size);
+
+                let innerSize = size * 0.4;
+                ctx.fillStyle = (i + j) % 2 === 0 ? `rgba(${fgRgb}, 0.9)` : `rgba(${bgRgb}, 0.9)`;
+                ctx.fillRect(-innerSize / 2, -innerSize / 2, innerSize, innerSize);
+
+                ctx.restore();
+            }
+        }
+
+        // The word forms while clicking and dissolves on release
+        progress = Math.max(0, Math.min(1, progress + (mouse.isDown ? 0.05 : -0.08)));
+        drawWord();
+
+        time += mouse.isDown ? 0.08 : 0.025;
+        requestAnimationFrame(draw);
+    }
+
+    // Start
+    resizeCanvas();
+    draw();
+</script>
+</body>
+</html>

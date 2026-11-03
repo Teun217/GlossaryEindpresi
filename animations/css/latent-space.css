@@ -1,0 +1,21 @@
+/* =====================================
+MARK: Latent Space Animation
+===================================== */
+
+.latent-space-container {
+    /* Colour variables */
+    --color-background: #000; /* Colour of the space/background */
+    --color-particles: #fff; /* Colour of the dots */
+
+    position: relative;
+    width: 100%;
+    height: 100vh;
+    overflow: hidden;
+    cursor: pointer;
+}
+
+.latent-space-container canvas {
+    display: block;
+    width: 100%;
+    height: 100%;
+}
