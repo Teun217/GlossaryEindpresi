@@ -113,19 +113,25 @@ function infoSlide(slug) {
 // The slide before each period's animations: the most important things of that
 // period (weekHighlights in content.js) and its animations
 function weekSlide({ label, terms }) {
-  const highlights = weekHighlights[label] || [];
-  const items = highlights.length
-    ? highlights.map((text) => `<li>${text}</li>`).join('')
+  const { summary = [], lessons = [] } = weekHighlights[label] || {};
+  const summaryItems = summary.length
+    ? summary.map((text) => `<li>${text}</li>`).join('')
     : '<li class="placeholder">The most important things of this period go here (content.js).</li>';
+  const lessonSection = lessons.length
+    ? `<div class="block block-header"><h3>Wat hebben we geleerd?</h3></div>
+        <div class="row"><div class="block block-text"><ul class="highlights">${lessons.map((text) => `<li>${text}</li>`).join('')}</ul></div></div>`
+    : '';
 
   const section = document.createElement('section');
+  section.classList.add('week-slide');
   section.id = periodId(label);
   section.innerHTML = `
     <div class="info">
       ${slideHeader(label)}
       <div class="page">
         <div class="block block-header"><h3>Highlights</h3></div>
-        <div class="row"><div class="block block-text"><ul class="highlights">${items}</ul></div></div>
+        <div class="row"><div class="block block-text"><ul class="highlights">${summaryItems}</ul></div></div>
+        ${lessonSection}
         <div class="block block-header"><h3>Animations</h3></div>
         <div class="row"><div class="block row-squares"></div></div>
       </div>

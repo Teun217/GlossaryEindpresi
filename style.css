@@ -11,6 +11,12 @@
 }
 
 /* Overrides for the reveal.js theme */
+html,
+body {
+  height: 100%;
+  overflow: hidden;
+}
+
 :root {
   --r-heading-text-transform: none;
   --r-main-font: "Inter", Helvetica, sans-serif;
@@ -227,6 +233,17 @@ button.grid-cell:focus-visible .thumb {
   display: flex;
   flex-direction: column;
   padding-bottom: 40px;
+}
+
+.week-slide .info .page {
+  overflow-y: auto;
+  overscroll-behavior-y: contain;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.week-slide .info .page::-webkit-scrollbar {
+  display: none;
 }
 
 .info .page::before,
